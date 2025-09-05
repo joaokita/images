@@ -1,0 +1,23 @@
+  
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma-data
+    volumes:
+      - chroma-data:/chroma/chroma-data
+  chromadb-ui:
+    build: .
+    ports:
+      - '8090:8090'
+    environment:
+      - CHROMA_API_URL=http://chromadb:8000
+    depends_on:
+      - chromadb
+volumes:
+  chroma-data:
+    driver: local
