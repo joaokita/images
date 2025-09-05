@@ -9,8 +9,9 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - "mongo1_data:/data/db"
-      - "mongo1_config:/data/configdb"
+      - mongo1_data:/data/db
+      - mongo1_config:/data/configdb
+      - ./init-replica.sh:/docker-entrypoint-initdb.d/init-replica.sh:ro
 
   mongo2:
     image: mongo:latest
@@ -20,8 +21,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - "mongo2_data:/data/db"
-      - "mongo2_config:/data/configdb"
+      - mongo2_data:/data/db
+      - mongo2_config:/data/configdb
 
   mongo3:
     image: mongo:latest
@@ -31,8 +32,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - "mongo3_data:/data/db"
-      - "mongo3_config:/data/configdb"
+      - mongo3_data:/data/db
+      - mongo3_config:/data/configdb
 
 volumes:
   mongo1_data:
