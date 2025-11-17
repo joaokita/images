@@ -1,0 +1,58 @@
+services:
+  mongo1:
+    image: mongo:7
+    container_name: mongo1
+    hostname: mongo1
+    ports:
+      - "27017:27017"
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
+    networks:
+      - mongoCluster
+
+  mongo2:
+    image: mongo:7
+    container_name: mongo2
+    hostname: mongo2
+    ports:
+      - "27018:27017"
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
+    networks:
+      - mongoCluster
+
+  mongo3:
+    image: mongo:7
+    container_name: mongo3
+    hostname: mongo3
+    ports:
+      - "27019:27017"
+    command: ["mongod", "--bind_ip_all", "--replSet", "rs0"]
+    networks:
+      - mongoCluster
+
+  setup:
+    image: mongo:7
+    container_name: mongo-setup
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    networks:
+      - mongoCluster
+    entrypoint: >
+      bash -c "
+      sleep 8 &&
+      mongosh 'mongodb://mongo1:27017' --eval '
+        rs.initiate({
+          _id: \"rs0\",
+          members: [
+            { _id: 0, host: \"host.docker.internal:27017\" },
+            { _id: 1, host: \"host.docker.internal:27018\" },
+            { _id: 2, host: \"host.docker.internal:27019\" }
+          ]
+        })
+      '
+      "
+
+networks:
+  mongoCluster:
+    driver: bridge
